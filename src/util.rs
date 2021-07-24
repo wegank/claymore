@@ -3,10 +3,12 @@ mod crc32b;
 
 #[derive(Debug, Copy, Clone, PartialEq)]
 pub struct KeyInfo {
-    group_id: u32,
-    key_id: u32,
-    secret: u64,
-    hash: u16
+    pub group_id: u32,
+    pub serial_number: u32,
+    pub fst_security_value: u64,
+    pub snd_security_value: u32,
+    pub checksum: u16,
+    pub upgrade_bit: u8,
 }
 
 impl KeyInfo {
@@ -14,17 +16,21 @@ impl KeyInfo {
         let val = base24::decode(key);
         KeyInfo {
             group_id: (val & 0xfffff) as u32,
-            key_id: ((val >> 20) & 0x3fffffff) as u32,
-            secret: ((val >> 50) & 0x1fffffffffffff) as u64,
-            hash: ((val >> 103) as u16) & 0x3ff,
+            serial_number: ((val >> 20) & 0x3fffffff) as u32,
+            fst_security_value: ((val >> 50) & 0xffffffffff) as u64,
+            snd_security_value: ((val >> 90) & 0x1fff) as u32,
+            checksum: ((val >> 103) & 0x3ff) as u16,
+            upgrade_bit: (val >> 113) as u8
         }
     }
 
     fn serialize(&self) -> u128 {
         self.group_id as u128
-            | (self.key_id as u128) << 20
-            | (self.secret as u128) << 50
-            | (self.hash as u128) << 103
+            | (self.serial_number as u128) << 20
+            | (self.fst_security_value as u128) << 50
+            | (self.snd_security_value as u128) << 90
+            | (self.checksum as u128) << 103
+            | (self.upgrade_bit as u128) << 113
     }
 
     pub fn check(&self) -> bool {
@@ -33,8 +39,8 @@ impl KeyInfo {
 
     pub fn hash(&self) -> KeyInfo {
         let mut key_info = self.clone();
-        key_info.hash = 0;
-        key_info.hash = crc32b::hash(key_info.serialize());
+        key_info.checksum = 0;
+        key_info.checksum = crc32b::hash(key_info.serialize());
         key_info
     }
 
@@ -47,18 +53,20 @@ impl KeyInfo {
 mod tests {
     use super::*;
 
-    const KEY: &str = "JWNY3-GG8KP-GBFXR-P8HHH-67PK9";
+    const KEY: &str = "RR3BN-3YY9P-9D7FC-7J4YF-QGJXW";
     const KEY_VAL: u128 = u128::from_le_bytes([
-        0xff, 0x42, 0x9d, 0x00, 0xc4, 0xd6, 0x1f, 0xfc,
-        0x2f, 0x1f, 0x2e, 0x52, 0xa2, 0x95, 0x00, 0x00
+        0xf6, 0x06, 0x00, 0x00, 0x00, 0x00, 0x78, 0xd6,
+        0x9d, 0xdc, 0xfa, 0x86, 0x83, 0x26, 0x01, 0x00
     ]);
     const KEY_INFO: KeyInfo = KeyInfo {
-        group_id: 0x000d42ff,
-        key_id: 0x3d6c4009,
-        secret: 0x0008948b87cbff07,
-        hash: 0x012b,
+        group_id: 0x000006f6,
+        serial_number: 0x00000000,
+        fst_security_value: 0x000000beb727759e,
+        snd_security_value: 0x000000e1,
+        checksum: 0x024d,
+        upgrade_bit: 0x0,
     };
-    const HASH: u16 = 0x008a;
+    const HASH: u16 = 0x024d;
 
     #[test]
     fn test_load() {
@@ -72,13 +80,13 @@ mod tests {
 
     #[test]
     fn test_check() {
-        assert_eq!(KEY_INFO.check(), false);
+        assert!(KEY_INFO.check());
     }
 
     #[test]
     fn test_hash() {
         let mut key_info = KEY_INFO;
-        key_info.hash = HASH;
+        key_info.checksum = HASH;
         assert_eq!(KEY_INFO.hash(), key_info);
     }
 
