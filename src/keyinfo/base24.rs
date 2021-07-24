@@ -9,9 +9,11 @@ pub fn encode(val: u128) -> String {
 }
 
 fn b24decode(bytes: &[u8; 25]) -> u128 {
-    bytes.iter().rev().enumerate()
-        .map(|(i, &k)| (k as u128) * u128::pow(24, i as u32))
-        .sum()
+    let mut val = 0;
+    for i in 0..25 {
+        val = val * 24 + bytes[i] as u128;
+    }
+    val
 }
 
 fn b24encode(val: u128) -> [u8; 25] {
