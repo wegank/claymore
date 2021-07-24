@@ -43,9 +43,9 @@ impl PKeyConfig {
         let key_ranges: Vec<&KeyRange> =
             self.key_ranges.iter().filter(|&key_range|
                 key_range.ref_act_config_id == configuration.act_config_id
-                && key_range.is_valid
-                && (key_range.start <= serial_number)
-                && (serial_number <= key_range.end)
+                    && key_range.is_valid
+                    && (key_range.start <= serial_number)
+                    && (serial_number <= key_range.end)
             ).collect();
         !key_ranges.is_empty()
     }

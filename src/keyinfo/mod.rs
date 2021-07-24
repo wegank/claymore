@@ -24,7 +24,7 @@ impl KeyInfo {
         })
     }
 
-    fn serialize(&self) -> u128 {
+    fn val(&self) -> u128 {
         self.group_id as u128
             | (self.serial_number as u128) << 20
             | (self.fst_security_value as u128) << 50
@@ -34,17 +34,17 @@ impl KeyInfo {
     }
 
     pub fn is_valid(&self) -> bool {
-        crc32b::is_valid(self.serialize()) && self.upgrade_bit <= 1
+        crc32b::is_valid(self.val()) && self.upgrade_bit <= 1
     }
 
     pub fn hash(&self) -> KeyInfo {
         let mut key_info = self.clone();
-        key_info.checksum = crc32b::hash(key_info.serialize());
+        key_info.checksum = crc32b::hash(key_info.val());
         key_info
     }
 
     pub fn save(&self) -> String {
-        base24::encode(self.serialize())
+        base24::encode(self.val())
     }
 }
 
@@ -72,8 +72,8 @@ mod tests {
     }
 
     #[test]
-    fn test_serialize() {
-        assert_eq!(KEY_INFO.serialize(), KEY_VAL);
+    fn test_val() {
+        assert_eq!(KEY_INFO.val(), KEY_VAL);
     }
 
     #[test]
