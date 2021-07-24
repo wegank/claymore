@@ -1,7 +1,7 @@
 const BASE24_STR: &str = "BCDFGHJKMPQRTVWXY2346789";
 
-pub fn decode(key: &String) -> u128 {
-    b24decode(&serialize(key))
+pub fn decode(key: &String) -> Result<u128, &str> {
+    Ok(b24decode(&serialize(key)?))
 }
 
 pub fn encode(val: u128) -> String {
@@ -24,33 +24,31 @@ fn b24encode(val: u128) -> [u8; 25] {
     bytes
 }
 
-fn serialize(key: &String) -> [u8; 25] {
+fn serialize(key: &String) -> Result<[u8; 25], &str> {
     let mut key: Vec<char> = key.chars().collect();
     if key.len() != 29 {
-        panic!("Your key must be 29 characters long.");
+        return Err("Your key must be 29 characters long.");
     } else if vec![5, 11, 17, 23].iter().any(|&i| key[i] != '-') {
-        panic!("Incorrect hyphens.")
-    } else if key.iter().filter(|&&i| i == 'N').count() > 1 {
-        panic!("There may only be one N in a key.")
-    } else if key.iter().filter(|&&i| i == 'N').count() == 0 {
-        panic!("The character N must be in the product key.")
+        return Err("Incorrect hyphens.");
     } else if key[28] == 'N' {
-        panic!("The last character must not be an N.")
+        return Err("The last character must not be an N.");
+    }
+    key.retain(|&c| c != '-');
+    match key.iter().filter(|&&c| c == 'N').count() {
+        0 => return Err("The character N must be in the product key."),
+        1 => (),
+        _ => return Err("There may only be one N in a key."),
     }
     let mut bytes: [u8; 25] = [0; 25];
-    key.retain(|&c| c != '-');
-    match key.iter().position(|&c| c == 'N') {
-        Some(pos) => bytes[0] = pos as u8,
-        _ => panic!("Invalid character in key."),
-    }
-    key.retain(|&c| c != 'N');
+    bytes[0] = key.iter().position(|&c| c == 'N').unwrap() as u8;
+    key.remove(bytes[0] as usize);
     for i in 1..25 {
         match BASE24_STR.find(key[i - 1]) {
             Some(pos) => bytes[i] = pos as u8,
-            _ => panic!("Invalid character in key."),
+            _ => return Err("Invalid character in key."),
         }
     }
-    bytes
+    Ok(bytes)
 }
 
 fn deserialize(bytes: &[u8; 25]) -> String {
@@ -82,7 +80,7 @@ mod tests {
 
     #[test]
     fn test_decode() {
-        assert_eq!(decode(&KEY.to_string()), KEY_VAL);
+        assert_eq!(decode(&KEY.to_string()), Ok(KEY_VAL));
     }
 
     #[test]
@@ -102,7 +100,7 @@ mod tests {
 
     #[test]
     fn test_serialize() {
-        assert_eq!(serialize(&KEY.to_string()), KEY_BYTES);
+        assert_eq!(serialize(&KEY.to_string()), Ok(KEY_BYTES));
     }
 
     #[test]

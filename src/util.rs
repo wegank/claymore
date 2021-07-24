@@ -12,16 +12,16 @@ pub struct KeyInfo {
 }
 
 impl KeyInfo {
-    pub fn load(key: &String) -> KeyInfo {
-        let val = base24::decode(key);
-        KeyInfo {
+    pub fn load(key: &String) -> Result<KeyInfo, &str> {
+        let val = base24::decode(key)?;
+        Ok(KeyInfo {
             group_id: (val & 0xfffff) as u32,
             serial_number: ((val >> 20) & 0x3fffffff) as u32,
             fst_security_value: ((val >> 50) & 0xffffffffff) as u64,
             snd_security_value: ((val >> 90) & 0x1fff) as u32,
             checksum: ((val >> 103) & 0x3ff) as u16,
             upgrade_bit: (val >> 113) as u8
-        }
+        })
     }
 
     fn serialize(&self) -> u128 {
@@ -69,7 +69,7 @@ mod tests {
 
     #[test]
     fn test_load() {
-        assert_eq!(KeyInfo::load(&KEY.to_string()), KEY_INFO);
+        assert_eq!(KeyInfo::load(&KEY.to_string()), Ok(KEY_INFO));
     }
 
     #[test]
