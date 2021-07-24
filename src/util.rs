@@ -59,11 +59,11 @@ mod tests {
         0x9d, 0xdc, 0xfa, 0x86, 0x83, 0x26, 0x01, 0x00
     ]);
     const KEY_INFO: KeyInfo = KeyInfo {
-        group_id: 0x000006f6,
-        serial_number: 0x00000000,
-        fst_security_value: 0x000000beb727759e,
-        snd_security_value: 0x000000e1,
-        checksum: 0x024d,
+        group_id: 0x6f6,
+        serial_number: 0x0,
+        fst_security_value: 0xbeb727759e,
+        snd_security_value: 0xe1,
+        checksum: 0x24d,
         upgrade_bit: 0x0,
     };
 

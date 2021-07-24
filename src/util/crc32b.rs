@@ -9,11 +9,7 @@ fn remove_checksum(val: u128) -> u128 {
     val & 0xfff6007fffffffffffffffffffffffff
 }
 
-pub fn add_checksum(val: u128, checksum: u16) -> u128 {
-    val | ((checksum as u128) << 103)
-}
-
-pub fn get_checksum(val: u128) -> u16 {
+fn get_checksum(val: u128) -> u16 {
     ((val >> 103) as u16) & 0x3ff
 }
 
@@ -33,7 +29,7 @@ mod tests {
         0xf6, 0x06, 0x00, 0x00, 0x00, 0x00, 0x78, 0xd6,
         0x9d, 0xdc, 0xfa, 0x86, 0x03, 0x00, 0x00, 0x00
     ]);
-    const CHECKSUM: u16 = 0x024d;
+    const CHECKSUM: u16 = 0x24d;
 
     #[test]
     fn test_hash() {
@@ -43,11 +39,6 @@ mod tests {
     #[test]
     fn test_remove_checksum() {
         assert_eq!(remove_checksum(KEY_VAL), KEY_VAL_NO_CRC);
-    }
-
-    #[test]
-    fn test_add_checksum() {
-        assert_eq!(add_checksum(KEY_VAL_NO_CRC, CHECKSUM), KEY_VAL);
     }
 
     #[test]
