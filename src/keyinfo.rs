@@ -33,13 +33,12 @@ impl KeyInfo {
             | (self.upgrade_bit as u128) << 113
     }
 
-    pub fn check(&self) -> bool {
-        crc32b::check(self.serialize())
+    pub fn is_valid(&self) -> bool {
+        crc32b::is_valid(self.serialize()) && self.upgrade_bit <= 1
     }
 
     pub fn hash(&self) -> KeyInfo {
         let mut key_info = self.clone();
-        key_info.checksum = 0;
         key_info.checksum = crc32b::hash(key_info.serialize());
         key_info
     }
@@ -79,7 +78,7 @@ mod tests {
 
     #[test]
     fn test_check() {
-        assert!(KEY_INFO.check());
+        assert!(KEY_INFO.is_valid());
     }
 
     #[test]
