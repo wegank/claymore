@@ -1,1 +1,14 @@
-/target
+.idea
+*.iml
+.gradle
+out/
+bin/
+build/
+build-cache
+gen/
+deps/
+exampleProject
+testData
+.DS_Store
+/pretty_printers_tests/target
+/native-helper/target
