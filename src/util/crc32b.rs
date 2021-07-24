@@ -5,59 +5,58 @@ pub fn hash(val: u128) -> u16 {
     crc.checksum(&val.to_le_bytes()) as u16 & 0x3ff
 }
 
-fn remove_hash(val: u128) -> u128 {
+fn remove_checksum(val: u128) -> u128 {
     val & 0xfff6007fffffffffffffffffffffffff
 }
 
-pub fn add_hash(val: u128, hash: u16) -> u128 {
-    val | ((hash as u128) << 103)
+pub fn add_checksum(val: u128, checksum: u16) -> u128 {
+    val | ((checksum as u128) << 103)
 }
 
-pub fn get_hash(val: u128) -> u16 {
+pub fn get_checksum(val: u128) -> u16 {
     ((val >> 103) as u16) & 0x3ff
 }
 
-pub fn check_hash(val: u128) -> bool {
-    hash(remove_hash(val)) == get_hash(val)
+pub fn check(val: u128) -> bool {
+    hash(remove_checksum(val)) == get_checksum(val)
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
 
-    const KEY2: u128 = u128::from_le_bytes([
+    const KEY_VAL: u128 = u128::from_le_bytes([
         0xf6, 0x06, 0x00, 0x00, 0x00, 0x00, 0x78, 0xd6,
         0x9d, 0xdc, 0xfa, 0x86, 0x83, 0x26, 0x01, 0x00
     ]);
-    const KEY3: u128 = u128::from_le_bytes([
+    const KEY_VAL_NO_CRC: u128 = u128::from_le_bytes([
         0xf6, 0x06, 0x00, 0x00, 0x00, 0x00, 0x78, 0xd6,
         0x9d, 0xdc, 0xfa, 0x86, 0x03, 0x00, 0x00, 0x00
     ]);
-    const HASH: u16 = 0x024d;
     const CHECKSUM: u16 = 0x024d;
 
     #[test]
     fn test_hash() {
-        assert_eq!(hash(KEY3), HASH);
+        assert_eq!(hash(KEY_VAL_NO_CRC), CHECKSUM);
     }
 
     #[test]
-    fn test_remove_hash() {
-        assert_eq!(remove_hash(KEY2), KEY3);
+    fn test_remove_checksum() {
+        assert_eq!(remove_checksum(KEY_VAL), KEY_VAL_NO_CRC);
     }
 
     #[test]
-    fn test_add_hash() {
-        assert_eq!(add_hash(KEY3, CHECKSUM), KEY2);
+    fn test_add_checksum() {
+        assert_eq!(add_checksum(KEY_VAL_NO_CRC, CHECKSUM), KEY_VAL);
     }
 
     #[test]
-    fn test_get_hash() {
-        assert_eq!(get_hash(KEY2), CHECKSUM);
+    fn test_get_checksum() {
+        assert_eq!(get_checksum(KEY_VAL), CHECKSUM);
     }
 
     #[test]
-    fn test_check_hash() {
-        assert!(check_hash(KEY2));
+    fn test_check() {
+        assert!(check(KEY_VAL));
     }
 }

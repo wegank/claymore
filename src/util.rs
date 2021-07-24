@@ -34,7 +34,7 @@ impl KeyInfo {
     }
 
     pub fn check(&self) -> bool {
-        crc32b::check_hash(self.serialize())
+        crc32b::check(self.serialize())
     }
 
     pub fn hash(&self) -> KeyInfo {
@@ -66,7 +66,6 @@ mod tests {
         checksum: 0x024d,
         upgrade_bit: 0x0,
     };
-    const HASH: u16 = 0x024d;
 
     #[test]
     fn test_load() {
@@ -85,9 +84,7 @@ mod tests {
 
     #[test]
     fn test_hash() {
-        let mut key_info = KEY_INFO;
-        key_info.checksum = HASH;
-        assert_eq!(KEY_INFO.hash(), key_info);
+        assert_eq!(KEY_INFO.hash(), KEY_INFO);
     }
 
     #[test]

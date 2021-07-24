@@ -1,11 +1,11 @@
 const BASE24_STR: &str = "BCDFGHJKMPQRTVWXY2346789";
 
 pub fn decode(key: &String) -> u128 {
-    b24decode(&to_bytes(key))
+    b24decode(&serialize(key))
 }
 
 pub fn encode(val: u128) -> String {
-    from_bytes(&b24encode(val))
+    deserialize(&b24encode(val))
 }
 
 fn b24decode(bytes: &[u8; 25]) -> u128 {
@@ -24,7 +24,7 @@ fn b24encode(val: u128) -> [u8; 25] {
     bytes
 }
 
-fn to_bytes(key: &String) -> [u8; 25] {
+fn serialize(key: &String) -> [u8; 25] {
     let mut key: Vec<char> = key.chars().collect();
     if key.len() != 29 {
         panic!("Your key must be 29 characters long.");
@@ -53,7 +53,7 @@ fn to_bytes(key: &String) -> [u8; 25] {
     bytes
 }
 
-fn from_bytes(bytes: &[u8; 25]) -> String {
+fn deserialize(bytes: &[u8; 25]) -> String {
     let mut key: String = bytes[1..25].iter()
         .map(|&i| BASE24_STR.as_bytes()[i as usize] as char).collect();
     key.insert(bytes[0] as usize, 'N');
@@ -68,45 +68,45 @@ mod tests {
     use super::*;
 
     const KEY: &str = "RR3BN-3YY9P-9D7FC-7J4YF-QGJXW";
-    const KEY1: [u8; 25] = [
+    const KEY_BYTES: [u8; 25] = [
         0x04, 0x0b, 0x0b, 0x12, 0x00,
         0x12, 0x10, 0x10, 0x17, 0x09,
         0x17, 0x02, 0x15, 0x03, 0x01,
         0x15, 0x06, 0x13, 0x10, 0x03,
         0x0a, 0x04, 0x06, 0x0f, 0x0e
     ];
-    const KEY2: u128 = u128::from_le_bytes([
+    const KEY_VAL: u128 = u128::from_le_bytes([
         0xf6, 0x06, 0x00, 0x00, 0x00, 0x00, 0x78, 0xd6,
         0x9d, 0xdc, 0xfa, 0x86, 0x83, 0x26, 0x01, 0x00
     ]);
 
     #[test]
     fn test_decode() {
-        assert_eq!(decode(&KEY.to_string()), KEY2);
+        assert_eq!(decode(&KEY.to_string()), KEY_VAL);
     }
 
     #[test]
     fn test_encode() {
-        assert_eq!(encode(KEY2), KEY.to_string());
+        assert_eq!(encode(KEY_VAL), KEY.to_string());
     }
 
     #[test]
     fn test_b24decode() {
-        assert_eq!(b24decode(&KEY1), KEY2);
+        assert_eq!(b24decode(&KEY_BYTES), KEY_VAL);
     }
 
     #[test]
     fn test_b24encode() {
-        assert_eq!(b24encode(KEY2), KEY1);
+        assert_eq!(b24encode(KEY_VAL), KEY_BYTES);
     }
 
     #[test]
-    fn test_to_bytes() {
-        assert_eq!(to_bytes(&KEY.to_string()), KEY1);
+    fn test_serialize() {
+        assert_eq!(serialize(&KEY.to_string()), KEY_BYTES);
     }
 
     #[test]
-    fn test_from_bytes() {
-        assert_eq!(from_bytes(&KEY1), KEY.to_string());
+    fn test_deserialize() {
+        assert_eq!(deserialize(&KEY_BYTES), KEY.to_string());
     }
 }
