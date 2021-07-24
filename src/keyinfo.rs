@@ -12,7 +12,7 @@ pub struct KeyInfo {
 }
 
 impl KeyInfo {
-    pub fn load(key: &String) -> Result<KeyInfo, &str> {
+    pub fn load(key: &String) -> Result<KeyInfo, String> {
         let val = base24::decode(key)?;
         Ok(KeyInfo {
             group_id: (val & 0xfffff) as u32,

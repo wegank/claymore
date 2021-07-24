@@ -1,6 +1,6 @@
 const BASE24_STR: &str = "BCDFGHJKMPQRTVWXY2346789";
 
-pub fn decode(key: &String) -> Result<u128, &str> {
+pub fn decode(key: &String) -> Result<u128, String> {
     Ok(b24decode(&serialize(key)?))
 }
 
@@ -24,20 +24,20 @@ fn b24encode(val: u128) -> [u8; 25] {
     bytes
 }
 
-fn serialize(key: &String) -> Result<[u8; 25], &str> {
+fn serialize(key: &String) -> Result<[u8; 25], String> {
     let mut key: Vec<char> = key.chars().collect();
     if key.len() != 29 {
-        return Err("Your key must be 29 characters long.");
+        return Err("Your key must be 29 characters long.".to_string());
     } else if vec![5, 11, 17, 23].iter().any(|&i| key[i] != '-') {
-        return Err("Incorrect hyphens.");
+        return Err("Incorrect hyphens.".to_string());
     } else if key[28] == 'N' {
-        return Err("The last character must not be an N.");
+        return Err("The last character must not be an N.".to_string());
     }
     key.retain(|&c| c != '-');
     match key.iter().filter(|&&c| c == 'N').count() {
-        0 => return Err("The character N must be in the product key."),
+        0 => return Err("The character N must be in the product key.".to_string()),
         1 => (),
-        _ => return Err("There may only be one N in a key."),
+        _ => return Err("There may only be one N in a key.".to_string()),
     }
     let mut bytes: [u8; 25] = [0; 25];
     bytes[0] = key.iter().position(|&c| c == 'N').unwrap() as u8;
@@ -45,7 +45,7 @@ fn serialize(key: &String) -> Result<[u8; 25], &str> {
     for i in 1..25 {
         match BASE24_STR.find(key[i - 1]) {
             Some(pos) => bytes[i] = pos as u8,
-            _ => return Err("Invalid character in key."),
+            _ => return Err("Invalid character in key.".to_string()),
         }
     }
     Ok(bytes)
