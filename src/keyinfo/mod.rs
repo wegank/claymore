@@ -34,7 +34,13 @@ impl KeyInfo {
     }
 
     pub fn is_valid(&self) -> bool {
-        crc32b::is_valid(self.val()) && self.upgrade_bit <= 1
+        crc32b::is_valid(self.val())
+            && self.group_id <= 0xfffff
+            && self.serial_number <= 0x3fffffff
+            && self.fst_security_value <= 0xffffffffff
+            && self.snd_security_value <= 0x1fff
+            && self.checksum <= 0x3ff
+            && self.upgrade_bit <= 0x1
     }
 
     pub fn hash(&self) -> KeyInfo {
