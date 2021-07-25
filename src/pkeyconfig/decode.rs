@@ -4,6 +4,8 @@ extern crate quick_xml;
 use serde::Deserialize;
 use quick_xml::de::from_str;
 
+const PKEY_CONFIG_INVALID: &str = "Invalid PKeyConfig file.";
+
 pub fn decode(xml: &String) -> Result<ProductKeyConfiguration, String> {
     let license_group = decode_stage1(xml)?;
     let xml = decode_stage2(&license_group)?;
@@ -42,14 +44,17 @@ struct InfoList {
 fn decode_stage1(xml: &String) -> Result<LicenseGroup, String> {
     match from_str(xml) {
         Ok(pkey_config_data) => Ok(pkey_config_data),
-        _ => Err("Invalid PKeyConfig file.".to_string()),
+        _ => Err(PKEY_CONFIG_INVALID.to_string()),
     }
 }
 
 fn decode_stage2(license_group: &LicenseGroup) -> Result<String, String> {
     match base64::decode(&license_group.license.other_info.info_tables.info_list.info_bin) {
-        Ok(bytes) => Ok(String::from_utf8(bytes).unwrap()),
-        _ => Err("Invalid PKeyConfig file".to_string()),
+        Ok(bytes) => match String::from_utf8(bytes) {
+            Ok(xml) => Ok(xml),
+            Err(err) => Err(err.to_string()),
+        },
+        _ => Err(PKEY_CONFIG_INVALID.to_string()),
     }
 }
 
@@ -126,6 +131,6 @@ pub struct PublicKey {
 fn decode_stage3(xml: &String) -> Result<ProductKeyConfiguration, String> {
     match from_str(xml) {
         Ok(product_key_configuration) => Ok(product_key_configuration),
-        _ => Err("Unsupported PKeyConfig file.".to_string()),
+        _ => Err(PKEY_CONFIG_INVALID.to_string()),
     }
 }

@@ -27,26 +27,25 @@ impl PKeyConfig {
     }
 
     pub fn is_valid(&self, group_id: u32, serial_number: u32) -> bool {
-        let configurations: Vec<&Configuration> =
-            self.configurations
-                .iter().filter(|&config| config.ref_group_id == group_id).collect();
-        if configurations.is_empty() {
+        let configurations: Vec<&Configuration> = self.configurations.iter()
+            .filter(|&config| config.ref_group_id == group_id).collect();
+        let configuration = match configurations.get(0) {
+            Some(configuration) => configuration,
+            _ => return false,
+        };
+        let public_keys: Vec<&PublicKey> = self.public_keys.iter()
+            .filter(|&public_key|
+                public_key.group_id == group_id
+                    && public_key.algorithm_id == "msft:rm/algorithm/pkey/2009").collect();
+        if public_keys.is_empty() {
             return false;
         }
-        let public_keys: Vec<&PublicKey> =
-            self.public_keys.iter().filter(|&key| key.group_id == group_id).collect();
-        if public_keys.is_empty()
-            || public_keys.get(0).unwrap().algorithm_id != "msft:rm/algorithm/pkey/2009" {
-            return false;
-        }
-        let configuration = configurations.get(0).unwrap();
-        let key_ranges: Vec<&KeyRange> =
-            self.key_ranges.iter().filter(|&key_range|
+        let key_ranges: Vec<&KeyRange> = self.key_ranges.iter()
+            .filter(|&key_range|
                 key_range.ref_act_config_id == configuration.act_config_id
                     && key_range.is_valid
-                    && (key_range.start <= serial_number)
-                    && (serial_number <= key_range.end)
-            ).collect();
+                    && key_range.start <= serial_number
+                    && serial_number <= key_range.end).collect();
         !key_ranges.is_empty()
     }
 }
