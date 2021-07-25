@@ -4,9 +4,9 @@ use decode::{Configuration, KeyRange, PublicKey};
 
 #[derive(Debug)]
 pub struct PKeyConfig {
-    configurations: Vec<Configuration>,
-    key_ranges: Vec<KeyRange>,
-    public_keys: Vec<PublicKey>,
+    pub configurations: Vec<Configuration>,
+    pub key_ranges: Vec<KeyRange>,
+    pub public_keys: Vec<PublicKey>,
 }
 
 impl PKeyConfig {
