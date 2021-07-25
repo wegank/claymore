@@ -19,7 +19,7 @@ impl PKeyConfig {
         })
     }
 
-    pub fn load_from_file(path: String) -> Result<PKeyConfig, String> {
+    pub fn load_from_file(path: &String) -> Result<PKeyConfig, String> {
         match std::fs::read_to_string(path) {
             Ok(xml) => PKeyConfig::load(&xml),
             Err(error) => Err(error.to_string()),
