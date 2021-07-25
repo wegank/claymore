@@ -1,4 +1,3 @@
-use claymore;
 use claymore::{KeyInfo, PKeyConfig};
 
 const KEY: &str = "RR3BN-3YY9P-9D7FC-7J4YF-QGJXW";
