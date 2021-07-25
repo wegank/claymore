@@ -12,6 +12,5 @@ fn main() {
         upgrade_bit: 0
     };
     let key = key_info.hash().save();
-
     println!("{}", key);
 }
