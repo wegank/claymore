@@ -29,10 +29,10 @@ fn b24encode(val: u128) -> [u8; 25] {
 
 fn serialize(key: &String) -> Result<[u8; 25], String> {
     let mut key: Vec<char> = key.chars().collect();
-    if key.len() != 29 || vec![5, 11, 17, 23].iter().any(|&i| key[i] != '-') {
+    if key.len() != 29 || (5..29).step_by(6).any(|i| key[i] != '-') {
         return Err(PKEY_INVALID.to_string());
     }
-    key.retain(|&c| c != '-');
+    key = (0..=29).step_by(6).map(|i| &key[i..i + 5]).collect::<Vec<_>>().concat();
     let mut bytes: [u8; 25] = [0; 25];
     bytes[0] = match key.iter().position(|&c| c == 'N') {
         Some(24) => return Err(PKEY_INVALID.to_string()),
