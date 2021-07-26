@@ -12,7 +12,7 @@ pub struct KeyInfo {
 }
 
 impl KeyInfo {
-    pub fn load(key: &String) -> Result<KeyInfo, String> {
+    pub fn load(key: &str) -> Result<KeyInfo, String> {
         let val = base24::decode(key)?;
         Ok(KeyInfo {
             group_id: (val & 0xfffff) as u32,
@@ -74,7 +74,7 @@ mod tests {
 
     #[test]
     fn test_load() {
-        assert_eq!(KeyInfo::load(&KEY.to_string()), Ok(KEY_INFO));
+        assert_eq!(KeyInfo::load(&KEY), Ok(KEY_INFO));
     }
 
     #[test]

@@ -26,7 +26,7 @@ mod tests {
     }
 
     #[test]
-    fn test_check() {
+    fn test_is_valid() {
         assert!(is_valid(KEY_VAL));
     }
 }

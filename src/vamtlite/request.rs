@@ -3,7 +3,7 @@ use sha2::Sha256;
 
 pub fn inner_xml(pid: &str) -> String {
     let url = r#""http://www.microsoft.com/DRM/SL/BatchActivationRequest/1.0""#;
-    let mut xml = "\
+    let xml = "\
     <ActivationRequest xmlns=".to_string() + url + ">\
         <VersionNumber>2.0</VersionNumber>\
         <RequestType>2</RequestType>\
@@ -13,10 +13,7 @@ pub fn inner_xml(pid: &str) -> String {
             </Request>\
         </Requests>\
     </ActivationRequest>";
-    for i in (1..=xml.len()).rev() {
-        xml.insert(i, '\0');
-    }
-    xml
+    xml.chars().map(|c| c.to_string() + "\0").collect::<Vec<_>>().join("")
 }
 
 fn digest(xml: &String) -> String {

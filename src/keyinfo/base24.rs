@@ -1,7 +1,7 @@
 const BASE24_STR: &str = "BCDFGHJKMPQRTVWXY2346789";
 const PKEY_INVALID: &str = "Invalid product key.";
 
-pub fn decode(key: &String) -> Result<u128, String> {
+pub fn decode(key: &str) -> Result<u128, String> {
     Ok(b24decode(&serialize(key)?))
 }
 
@@ -27,7 +27,7 @@ fn b24encode(val: u128) -> [u8; 25] {
     bytes
 }
 
-fn serialize(key: &String) -> Result<[u8; 25], String> {
+fn serialize(key: &str) -> Result<[u8; 25], String> {
     let mut key: Vec<char> = key.chars().collect();
     if key.len() != 29 || (5..29).step_by(6).any(|i| key[i] != '-') {
         return Err(PKEY_INVALID.to_string());
@@ -78,7 +78,7 @@ mod tests {
 
     #[test]
     fn test_decode() {
-        assert_eq!(decode(&KEY.to_string()), Ok(KEY_VAL));
+        assert_eq!(decode(&KEY), Ok(KEY_VAL));
     }
 
     #[test]
@@ -98,7 +98,7 @@ mod tests {
 
     #[test]
     fn test_serialize() {
-        assert_eq!(serialize(&KEY.to_string()), Ok(KEY_BYTES));
+        assert_eq!(serialize(&KEY), Ok(KEY_BYTES));
     }
 
     #[test]
