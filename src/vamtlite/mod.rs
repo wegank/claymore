@@ -1,26 +1,25 @@
 pub mod request;
 pub mod deserialize;
 
+use deserialize::Response;
+
 pub struct VAMTLite {}
 
 impl VAMTLite {
-    pub fn query(pid: &str) -> Result<i32, String> {
-        let pid = pid.replace("XXXXX", "12345");
-        let responses = match request::request(&pid) {
+    pub fn query(pid_list: &Vec<String>) -> Result<Vec<Response>, String> {
+        match request::request(pid_list) {
             Ok(xml) => match deserialize::parse(&xml) {
-                Ok(envelope) => envelope.body
+                Ok(envelope) => Ok(envelope.body
                     .batch_activate_response
                     .batch_activate_result.response_xml
-                    .activation_response.responses.responses,
-                Err(err) => return Err(err),
+                    .activation_response.responses.responses),
+                Err(err) => Err(err),
             },
-            Err(err) => return Err(format!("{:#?}", err)),
-        };
-        let responses = responses.into_iter()
-            .filter(|response| response.pid == pid).collect::<Vec<_>>();
-        match responses.get(0) {
-            Some(response) => Ok(response.activation_remaining),
-            _ => Ok(-1),
+            Err(err) => Err(format!("{:#?}", err)),
         }
+    }
+
+    pub fn query_one(pid: &str) -> Result<Vec<Response>, String> {
+        VAMTLite::query(&vec![pid.into()])
     }
 }

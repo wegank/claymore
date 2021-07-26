@@ -1,16 +1,20 @@
 use hmac::{Hmac, Mac, NewMac};
 use sha2::Sha256;
 
-pub fn inner_xml(pid: &str) -> String {
+pub fn inner_xml(pid_list: &Vec<String>) -> String {
     let url = r#""http://www.microsoft.com/DRM/SL/BatchActivationRequest/1.0""#;
-    let xml = "\
+    let mut xml = "\
     <ActivationRequest xmlns=".to_string() + url + ">\
         <VersionNumber>2.0</VersionNumber>\
         <RequestType>2</RequestType>\
-        <Requests>\
+        <Requests>";
+    for pid in pid_list.iter() {
+        xml = xml + "\
             <Request>\
-                <PID>" + &pid + "</PID>\
-            </Request>\
+                <PID>" + &pid.replace("XXXXX", "12345") + "</PID>\
+            </Request>";
+    }
+    xml += "\
         </Requests>\
     </ActivationRequest>";
     xml.chars().map(|c| c.to_string() + "\0").collect::<Vec<_>>().join("")
@@ -47,7 +51,7 @@ pub fn envelope(xml: &String) -> String {
 }
 
 #[tokio::main]
-pub async fn request(pid: &str) -> Result<String, reqwest::Error> {
+pub async fn request(pid: &Vec<String>) -> Result<String, reqwest::Error> {
     let client = reqwest::Client::builder()
         .danger_accept_invalid_certs(true).build()?;
     let xml = client.post("https://activation.sls.microsoft.com/BatchActivation/BatchActivation.asmx")
@@ -66,26 +70,26 @@ mod tests {
     use hex_literal::hex;
     use sha2::Digest;
 
-    const PID: &str = "12345-01785-029-888334-03-1033-9200.0000-2072021";
+    const PID: &str = "XXXXX-01785-029-888334-03-1033-9200.0000-2072021";
 
     #[test]
     fn test_inner_xml() {
         let mut hasher = sha2::Sha256::new();
-        hasher.update(base64::encode(inner_xml(PID)));
+        hasher.update(base64::encode(inner_xml(&vec![PID.into()])));
         assert_eq!(hasher.finalize()[..], hex!(
             "df54f6dead20b673234aea2c0ae81efd306262b4939ed4451d3dec35e23de490")[..]);
     }
 
     #[test]
     fn test_digest() {
-        assert_eq!(digest(&inner_xml(PID)),
+        assert_eq!(digest(&inner_xml(&vec![PID.into()])),
                    "7dGAT9dw3id1wXkdKa6J8Lk/K1eb43a++KAsMxVd3yc=");
     }
 
     #[test]
     fn test_envelope() {
         let mut hasher = sha2::Sha256::new();
-        hasher.update(envelope(&inner_xml(PID)));
+        hasher.update(envelope(&inner_xml(&vec![PID.into()])));
         assert_eq!(hasher.finalize()[..], hex!(
             "0c8cc5d5223b4fbed9119f0016552bccb6b5614ffca3e5e0dd1e947919fb7c5f")[..]);
     }
