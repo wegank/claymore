@@ -71,21 +71,21 @@ mod tests {
     #[test]
     fn test_inner_xml() {
         let mut hasher = sha2::Sha256::new();
-        hasher.update(base64::encode(inner_xml(&PID)));
+        hasher.update(base64::encode(inner_xml(PID)));
         assert_eq!(hasher.finalize()[..], hex!(
             "df54f6dead20b673234aea2c0ae81efd306262b4939ed4451d3dec35e23de490")[..]);
     }
 
     #[test]
     fn test_digest() {
-        assert_eq!(digest(&inner_xml(&PID)),
+        assert_eq!(digest(&inner_xml(PID)),
                    "7dGAT9dw3id1wXkdKa6J8Lk/K1eb43a++KAsMxVd3yc=");
     }
 
     #[test]
     fn test_envelope() {
         let mut hasher = sha2::Sha256::new();
-        hasher.update(envelope(&inner_xml(&PID)));
+        hasher.update(envelope(&inner_xml(PID)));
         assert_eq!(hasher.finalize()[..], hex!(
             "0c8cc5d5223b4fbed9119f0016552bccb6b5614ffca3e5e0dd1e947919fb7c5f")[..]);
     }

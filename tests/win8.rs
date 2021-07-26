@@ -5,8 +5,8 @@ const PATH: &str = "resources/pkeyconfig-win8.xrm-ms";
 
 #[test]
 fn test() {
-    let key_info = KeyInfo::load(&KEY).unwrap();
-    let pkey_config = PKeyConfig::load_from_file(&PATH).unwrap();
+    let key_info = KeyInfo::load(KEY).unwrap();
+    let pkey_config = PKeyConfig::load_from_file(PATH).unwrap();
     assert!(key_info.is_valid());
     assert!(pkey_config.is_valid(key_info.group_id, key_info.serial_number));
 }

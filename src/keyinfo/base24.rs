@@ -78,7 +78,7 @@ mod tests {
 
     #[test]
     fn test_decode() {
-        assert_eq!(decode(&KEY), Ok(KEY_VAL));
+        assert_eq!(decode(KEY), Ok(KEY_VAL));
     }
 
     #[test]
@@ -98,7 +98,7 @@ mod tests {
 
     #[test]
     fn test_serialize() {
-        assert_eq!(serialize(&KEY), Ok(KEY_BYTES));
+        assert_eq!(serialize(KEY), Ok(KEY_BYTES));
     }
 
     #[test]

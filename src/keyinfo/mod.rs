@@ -74,7 +74,7 @@ mod tests {
 
     #[test]
     fn test_load() {
-        assert_eq!(KeyInfo::load(&KEY), Ok(KEY_INFO));
+        assert_eq!(KeyInfo::load(KEY), Ok(KEY_INFO));
     }
 
     #[test]
