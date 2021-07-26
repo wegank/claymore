@@ -1,5 +1,5 @@
-mod decode;
-use decode::{Configuration, KeyRange, PublicKey};
+mod deserialize;
+use deserialize::{Configuration, KeyRange, PublicKey};
 use chrono::prelude::*;
 
 const PKEY_INVALID: &str = "Invalid product key.";
@@ -25,7 +25,7 @@ pub struct PKeyConfigInfo {
 
 impl PKeyConfig {
     pub fn load(xml: &String) -> Result<PKeyConfig, String> {
-        let product_key_configuration = decode::decode(xml)?;
+        let product_key_configuration = deserialize::deserialize(xml)?;
         Ok(PKeyConfig {
             configurations: product_key_configuration.configurations.configurations,
             key_ranges: product_key_configuration.key_ranges.key_ranges,
