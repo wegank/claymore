@@ -1,7 +1,7 @@
 use hmac::{Hmac, Mac, NewMac};
 use sha2::Sha256;
 
-pub fn inner_xml(pid_list: &Vec<String>) -> String {
+fn inner_xml(pid_list: &Vec<String>) -> String {
     let url = r#""http://www.microsoft.com/DRM/SL/BatchActivationRequest/1.0""#;
     let mut xml = "\
     <ActivationRequest xmlns=".to_string() + url + ">\
@@ -33,7 +33,7 @@ fn digest(xml: &String) -> String {
     base64::encode(mac.finalize().into_bytes())
 }
 
-pub fn envelope(xml: &String) -> String {
+fn envelope(xml: &String) -> String {
     let url = r#""http://www.microsoft.com/BatchActivationService""#;
     r#"<?xml version="1.0" encoding="utf-8"?>"#.to_string() +
     r#"<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/""#
