@@ -1,12 +1,23 @@
 mod decode;
-
 use decode::{Configuration, KeyRange, PublicKey};
+
+const PKEY_INVALID: &str = "Invalid product key.";
 
 #[derive(Debug)]
 pub struct PKeyConfig {
     pub configurations: Vec<Configuration>,
     pub key_ranges: Vec<KeyRange>,
     pub public_keys: Vec<PublicKey>,
+}
+
+#[derive(Debug)]
+pub struct PKeyConfigInfo {
+    pub act_config_id: String,
+    pub edition_id: String,
+    pub product_description: String,
+    pub part_number: String,
+    pub product_key_type: String,
+    pub eula_type: String,
 }
 
 impl PKeyConfig {
@@ -26,26 +37,48 @@ impl PKeyConfig {
         }
     }
 
-    pub fn is_valid(&self, group_id: u32, serial_number: u32) -> bool {
-        let configurations: Vec<&Configuration> = self.configurations.iter()
-            .filter(|&config| config.ref_group_id == group_id).collect();
-        let configuration = match configurations.get(0) {
-            Some(configuration) => configuration,
-            _ => return false,
+    pub fn query(&self, group_id: u32, serial_number: u32) -> Result<PKeyConfigInfo, String> {
+        let configuration = match self.configurations.iter()
+            .filter(|&config| config.ref_group_id == group_id)
+            .collect::<Vec<_>>().get(0) {
+            Some(&configuration) => configuration,
+            _ => return Err(PKEY_INVALID.to_string()),
         };
-        let public_keys: Vec<&PublicKey> = self.public_keys.iter()
-            .filter(|&public_key|
-                public_key.group_id == group_id
-                    && public_key.algorithm_id == "msft:rm/algorithm/pkey/2009").collect();
-        if public_keys.is_empty() {
-            return false;
-        }
-        let key_ranges: Vec<&KeyRange> = self.key_ranges.iter()
+        let key_range = match self.key_ranges.iter()
             .filter(|&key_range|
                 key_range.ref_act_config_id == configuration.act_config_id
                     && key_range.is_valid
                     && key_range.start <= serial_number
-                    && serial_number <= key_range.end).collect();
-        !key_ranges.is_empty()
+                    && serial_number <= key_range.end)
+            .collect::<Vec<_>>().get(0) {
+            Some(&key_range) => key_range,
+            _ => return Err(PKEY_INVALID.to_string()),
+        };
+        match self.public_keys.iter()
+            .filter(|&public_key|
+                public_key.group_id == group_id
+                    && public_key.algorithm_id == "msft:rm/algorithm/pkey/2009")
+            .collect::<Vec<_>>().get(0) {
+            Some(_) => (),
+            _ => return Err(PKEY_INVALID.to_string()),
+        };
+        let act_config_id = configuration.act_config_id.clone();
+        let edition_id = configuration.edition_id.clone();
+        let product_description = configuration.product_description.clone();
+        let product_key_type = configuration.product_key_type.clone();
+        let part_number = key_range.part_number.clone();
+        let eula_type = key_range.eula_type.clone();
+        Ok(PKeyConfigInfo {
+            act_config_id,
+            edition_id,
+            product_description,
+            product_key_type,
+            part_number,
+            eula_type,
+        })
+    }
+
+    pub fn is_valid(&self, group_id: u32, serial_number: u32) -> bool {
+        self.query(group_id, serial_number).is_ok()
     }
 }
