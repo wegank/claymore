@@ -6,6 +6,7 @@ The library currently contains:
 
 - ```keyinfo```, a module for decoding and encoding Windows product keys,
 - ```pkeyconfig```, a module for decoding product key configuration files.
+- ```vamtlite```, a module for checking MAK remaining activation counts.
 
 The library targets product keys for Windows 8 and later versions of Windows.
 
