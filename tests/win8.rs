@@ -1,7 +1,7 @@
 use claymore::{KeyInfo, PKeyConfig};
 
 const KEY: &str = "RR3BN-3YY9P-9D7FC-7J4YF-QGJXW";
-const PATH: &str = "resources/pkeyconfig-win8.xrm-ms";
+const PATH: &str = "tests/resources/pkeyconfig-win8.xrm-ms";
 
 #[test]
 fn test() {
