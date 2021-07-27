@@ -76,11 +76,13 @@ impl PKeyConfig {
             + &format!("{:05}", group_id)
             + &format!("{:09}", serial_number) + "-"
             + &format!("{:02}",
-                       match key_range.eula_type.as_str() {
-                           "OEM" => 2,
-                           "Volume" => 3,
-                           _ => upgrade_bit,
-                       }) + "-1033-9200.0000-"
+                       if configuration.product_key_type.contains("OEM") {
+                           2
+                       } else if configuration.product_key_type.contains("Volume") {
+                           3
+                       } else {
+                           upgrade_bit
+                       } ) + "-1033-9200.0000-"
             + &format!("{:03}", Utc::today().ordinal())
             + &format!("{:04}", Utc::today().year());
         for i in (11..16).step_by(4) {
