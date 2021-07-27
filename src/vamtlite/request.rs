@@ -11,7 +11,7 @@ fn inner_xml(pid_list: &Vec<String>) -> String {
     for pid in pid_list.iter() {
         xml = xml + "\
             <Request>\
-                <PID>" + &pid.replace("XXXXX", "12345") + "</PID>\
+                <PID>" + pid + "</PID>\
             </Request>";
     }
     xml += "\
@@ -60,7 +60,6 @@ pub async fn request(pid: &Vec<String>) -> Result<String, reqwest::Error> {
         .header("Host", "activation.sls.microsoft.com")
         .body(envelope(&inner_xml(pid)))
         .send().await?.text().await?;
-    println!("{:#?}", xml);
     Ok(xml)
 }
 
@@ -70,7 +69,7 @@ mod tests {
     use hex_literal::hex;
     use sha2::Digest;
 
-    const PID: &str = "XXXXX-01785-029-888334-03-1033-9200.0000-2072021";
+    const PID: &str = "12345-01785-029-888334-03-1033-9200.0000-2072021";
 
     #[test]
     fn test_inner_xml() {
