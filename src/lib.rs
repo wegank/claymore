@@ -1,7 +1,7 @@
 mod keyinfo;
-mod pkeyconfig;
-mod vamtlite;
+mod pkeyinfo;
+mod vkeyinfo;
 
 pub use keyinfo::KeyInfo;
-pub use pkeyconfig::PKeyConfig;
-pub use vamtlite::VAMTLite;
+pub use pkeyinfo::PKeyInfo;
+pub use vkeyinfo::VKeyInfo;

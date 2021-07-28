@@ -5,17 +5,17 @@ use std::collections::HashMap;
 
 const PID_NOT_FOUND: &str = "Extended PID not found.";
 
-pub struct VAMTLite {
+pub struct VKeyInfo {
     pub responses: HashMap<String, i32>,
 }
 
-impl VAMTLite {
-    pub fn load(pid_list: &Vec<String>) -> Result<VAMTLite, String> {
+impl VKeyInfo {
+    pub fn load(pid_list: &Vec<String>) -> Result<VKeyInfo, String> {
         let pid_list: Vec<String> = pid_list.into_iter()
             .map(|pid| pid.replace("XXXXX", "12345")).collect();
         match request::request(&pid_list) {
             Ok(xml) => match deserialize::parse(&xml) {
-                Ok(envelope) => Ok(VAMTLite {
+                Ok(envelope) => Ok(VKeyInfo {
                     responses: envelope.body
                         .batch_activate_response
                         .batch_activate_result.response_xml
@@ -30,8 +30,8 @@ impl VAMTLite {
         }
     }
 
-    pub fn load_one(pid: &str) -> Result<VAMTLite, String> {
-        VAMTLite::load(&vec![pid.into()])
+    pub fn load_one(pid: &str) -> Result<VKeyInfo, String> {
+        VKeyInfo::load(&vec![pid.into()])
     }
 
     pub fn query(&self, pid: &str) -> Result<i32, String> {

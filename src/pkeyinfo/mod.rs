@@ -12,7 +12,7 @@ pub struct PKeyConfig {
 }
 
 #[derive(Debug)]
-pub struct PKeyConfigInfo {
+pub struct PKeyInfo {
     pub product_id: String,
     pub extended_pid: String,
     pub act_config_id: String,
@@ -23,7 +23,7 @@ pub struct PKeyConfigInfo {
     pub eula_type: String,
 }
 
-impl PKeyConfig {
+impl PKeyInfo {
     pub fn load(xml: &String) -> Result<PKeyConfig, String> {
         let product_key_configuration = deserialize::deserialize(xml)?;
         Ok(PKeyConfig {
@@ -35,13 +35,15 @@ impl PKeyConfig {
 
     pub fn load_from_file(path: &str) -> Result<PKeyConfig, String> {
         match std::fs::read_to_string(path) {
-            Ok(xml) => PKeyConfig::load(&xml),
+            Ok(xml) => PKeyInfo::load(&xml),
             Err(error) => Err(error.to_string()),
         }
     }
+}
 
+impl PKeyConfig {
     pub fn query(&self, group_id: u32, serial_number: u32, upgrade_bit: u8)
-        -> Result<PKeyConfigInfo, String> {
+        -> Result<PKeyInfo, String> {
         let configuration = match self.configurations.iter()
             .filter(|&config| config.ref_group_id == group_id)
             .collect::<Vec<_>>().get(0) {
@@ -95,7 +97,7 @@ impl PKeyConfig {
         let product_key_type = configuration.product_key_type.clone();
         let part_number = key_range.part_number.clone();
         let eula_type = key_range.eula_type.clone();
-        Ok(PKeyConfigInfo {
+        Ok(PKeyInfo {
             product_id,
             extended_pid,
             act_config_id,
