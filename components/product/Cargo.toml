@@ -1,0 +1,12 @@
+[package]
+name = "claymore_product"
+version = "0.0.1"
+edition = "2018"
+
+[dependencies]
+base64 = "0.13.0"
+chrono = "0.4"
+crc = "2.0"
+quick-xml = { version = "0.21", features = [ "serialize" ] }
+rand = "0.8.0"
+serde = { version = "1.0", features = [ "derive" ] }

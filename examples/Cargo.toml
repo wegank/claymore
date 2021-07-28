@@ -1,0 +1,17 @@
+[package]
+name = "examples"
+version = "0.0.0"
+publish = false
+edition = "2018"
+
+[dependencies]
+claymore = { path = "../components/claymore" }
+rand = "0.8.0"
+
+[[example]]
+name = "keygen"
+path = "keygen.rs"
+
+[[example]]
+name = "pid_checker"
+path = "pid_checker.rs"

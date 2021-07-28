@@ -1,0 +1,7 @@
+[package]
+name = "claymore_key"
+version = "0.0.1"
+edition = "2018"
+
+[dependencies]
+crc = "2.0"

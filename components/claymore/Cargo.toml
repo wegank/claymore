@@ -1,0 +1,9 @@
+[package]
+name = "claymore"
+version = "0.1.0"
+edition = "2018"
+
+[dependencies]
+claymore_key = { path = "../key" }
+claymore_license = { path = "../license" }
+claymore_product = { path = "../product" }

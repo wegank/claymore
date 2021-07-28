@@ -1,7 +1,7 @@
 use claymore::{KeyInfo, PKeyInfo, VKeyInfo};
 
 const KEY: &str = "RR3BN-3YY9P-9D7FC-7J4YF-QGJXW";
-const PATH: &str = "examples/resources/pkeyconfig-win8.xrm-ms";
+const PATH: &str = "resources/pkeyconfig-win8.xrm-ms";
 
 fn main() {
     let key_info = KeyInfo::load(KEY).unwrap();
