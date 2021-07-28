@@ -5,8 +5,8 @@ Claymore is a Rust library for analyzing Microsoft product keys.
 The library currently contains:
 
 - ```keyinfo```, a module for decoding and encoding product keys,
-- ```pkeyconfig```, a module for decoding product key configuration files.
-- ```vamtlite```, a module for checking MAK remaining activation counts.
+- ```pkeyinfo```, a module for checking product key configurations.
+- ```vkeyinfo```, a module for checking MAK remaining activation counts.
 
 The library targets product keys for:
 
