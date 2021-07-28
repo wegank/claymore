@@ -1,5 +1,5 @@
 const BASE24_STR: &str = "BCDFGHJKMPQRTVWXY2346789";
-const PKEY_INVALID: &str = "Invalid product key.";
+const KEY_INVALID: &str = "Invalid product key.";
 
 pub fn decode(key: &str) -> Result<u128, String> {
     Ok(b24decode(&serialize(key)?))
@@ -30,20 +30,20 @@ fn b24encode(val: u128) -> [u8; 25] {
 fn serialize(key: &str) -> Result<[u8; 25], String> {
     let mut key: Vec<char> = key.chars().collect();
     if key.len() != 29 || (5..29).step_by(6).any(|i| key[i] != '-') {
-        return Err(PKEY_INVALID.to_string());
+        return Err(KEY_INVALID.to_string());
     }
     key = (0..=29).step_by(6).map(|i| &key[i..i + 5]).collect::<Vec<_>>().concat();
     let mut bytes: [u8; 25] = [0; 25];
     bytes[0] = match key.iter().position(|&c| c == 'N') {
-        Some(24) => return Err(PKEY_INVALID.to_string()),
+        Some(24) => return Err(KEY_INVALID.to_string()),
         Some(i) => i as u8,
-        _ => return Err(PKEY_INVALID.to_string()),
+        _ => return Err(KEY_INVALID.to_string()),
     };
     key.remove(bytes[0] as usize);
     for i in 1..25 {
         match BASE24_STR.find(key[i - 1]) {
             Some(pos) => bytes[i] = pos as u8,
-            _ => return Err(PKEY_INVALID.to_string()),
+            _ => return Err(KEY_INVALID.to_string()),
         }
     }
     Ok(bytes)

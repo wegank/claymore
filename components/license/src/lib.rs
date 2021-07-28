@@ -5,17 +5,17 @@ use std::collections::HashMap;
 
 const PID_NOT_FOUND: &str = "Extended PID not found.";
 
-pub struct VKeyInfo {
+pub struct LicenseInfo {
     pub responses: HashMap<String, i32>,
 }
 
-impl VKeyInfo {
-    pub fn load(pid_list: &Vec<String>) -> Result<VKeyInfo, String> {
+impl LicenseInfo {
+    pub fn load(pid_list: &Vec<String>) -> Result<LicenseInfo, String> {
         let pid_list: Vec<String> = pid_list.into_iter()
             .map(|pid| pid.replace("XXXXX", "12345")).collect();
         match request::request(&pid_list) {
             Ok(xml) => match deserialize::parse(&xml) {
-                Ok(envelope) => Ok(VKeyInfo {
+                Ok(envelope) => Ok(LicenseInfo {
                     responses: envelope.body
                         .batch_activate_response
                         .batch_activate_result.response_xml
@@ -30,8 +30,8 @@ impl VKeyInfo {
         }
     }
 
-    pub fn load_one(pid: &str) -> Result<VKeyInfo, String> {
-        VKeyInfo::load(&vec![pid.into()])
+    pub fn load_one(pid: &str) -> Result<LicenseInfo, String> {
+        LicenseInfo::load(&vec![pid.into()])
     }
 
     pub fn query(&self, pid: &str) -> Result<i32, String> {
