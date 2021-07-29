@@ -6,6 +6,11 @@ pub use claymore_license::LicenseInfo;
 pub trait ProductConfigUsingKeys {
     fn query_key(&self, key: &str) -> Result<ProductInfo, String>;
     fn is_valid_key(&self, key: &str) -> bool;
+    fn print_key_info(&self, key: &str);
+}
+
+pub trait LicenseInfoUsingKeys {
+    fn print_key_info(&self, key: &str);
 }
 
 impl ProductConfigUsingKeys for ProductConfig {
@@ -16,5 +21,29 @@ impl ProductConfigUsingKeys for ProductConfig {
 
     fn is_valid_key(&self, key: &str) -> bool {
         self.query_key(key).is_ok()
+    }
+
+    fn print_key_info(&self, key: &str) {
+        println!("Product Key     : {}", key);
+        print!(  "Key Status      : ");
+        match self.query_key(key) {
+            Ok(product_info) => {
+                println!("Valid");
+                println!("{}", product_info);
+            },
+            _ => println!("Invalid"),
+        }
+    }
+}
+
+impl LicenseInfoUsingKeys for LicenseInfo {
+    fn print_key_info(&self, pid: &str) {
+        match self.query(pid) {
+            Ok(activation_remaining) => match activation_remaining {
+                -1 => println!("Activation Count: Key Blocked!"),
+                _ => println!("Activation Count: {}", activation_remaining),
+            }
+            _ => (),
+        }
     }
 }
