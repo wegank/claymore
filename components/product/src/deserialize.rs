@@ -6,7 +6,7 @@ use quick_xml::de::from_str;
 
 const PKEY_CONFIG_INVALID: &str = "Invalid PKeyConfig file.";
 
-pub fn deserialize(xml: &String) -> Result<ProductKeyConfiguration, String> {
+pub fn deserialize(xml: &str) -> Result<ProductKeyConfiguration, String> {
     let license_group = deserialize_stage1(xml)?;
     let xml = deserialize_stage2(&license_group)?;
     deserialize_stage3(&xml)
@@ -41,7 +41,7 @@ struct InfoList {
     info_bin: String,
 }
 
-fn deserialize_stage1(xml: &String) -> Result<LicenseGroup, String> {
+fn deserialize_stage1(xml: &str) -> Result<LicenseGroup, String> {
     match from_str(xml) {
         Ok(pkey_config_data) => Ok(pkey_config_data),
         _ => Err(PKEY_CONFIG_INVALID.to_string()),

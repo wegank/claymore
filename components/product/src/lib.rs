@@ -24,7 +24,7 @@ pub struct ProductInfo {
 }
 
 impl ProductInfo {
-    pub fn load(xml: &String) -> Result<ProductConfig, String> {
+    pub fn load(xml: &str) -> Result<ProductConfig, String> {
         let product_key_configuration = deserialize::deserialize(xml)?;
         Ok(ProductConfig {
             configurations: product_key_configuration.configurations.configurations,
