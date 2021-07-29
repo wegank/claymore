@@ -1,5 +1,5 @@
 use claymore::{ProductInfo, ProductConfigUsingKeys};
-use claymore::{LicenseInfo, LicenseInfoUsingKeys};
+use claymore::LicenseInfo;
 
 const KEY: &str = "RR3BN-3YY9P-9D7FC-7J4YF-QGJXW";
 const TEXT: &str = include_str!("../resources/pkeyconfig-win8.xrm-ms");

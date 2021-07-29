@@ -47,4 +47,14 @@ impl LicenseInfo {
             _ => false,
         }
     }
+
+    pub fn print_key_info(&self, pid: &str) {
+        match self.query(pid) {
+            Ok(activation_remaining) => match activation_remaining {
+                -1 => println!("Activation Count: Key Blocked!"),
+                _ => println!("Activation Count: {}", activation_remaining),
+            }
+            _ => (),
+        }
+    }
 }

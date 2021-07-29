@@ -9,10 +9,6 @@ pub trait ProductConfigUsingKeys {
     fn print_key_info(&self, key: &str);
 }
 
-pub trait LicenseInfoUsingKeys {
-    fn print_key_info(&self, key: &str);
-}
-
 impl ProductConfigUsingKeys for ProductConfig {
     fn query_key(&self, key: &str) -> Result<ProductInfo, String> {
         let key_info = KeyInfo::load(key)?;
@@ -32,18 +28,6 @@ impl ProductConfigUsingKeys for ProductConfig {
                 println!("{}", product_info);
             },
             _ => println!("Invalid"),
-        }
-    }
-}
-
-impl LicenseInfoUsingKeys for LicenseInfo {
-    fn print_key_info(&self, pid: &str) {
-        match self.query(pid) {
-            Ok(activation_remaining) => match activation_remaining {
-                -1 => println!("Activation Count: Key Blocked!"),
-                _ => println!("Activation Count: {}", activation_remaining),
-            }
-            _ => (),
         }
     }
 }
