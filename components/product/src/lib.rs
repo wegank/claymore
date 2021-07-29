@@ -21,6 +21,7 @@ pub struct ProductInfo {
     pub part_number: String,
     pub product_key_type: String,
     pub eula_type: String,
+    pub group_id: u32,
 }
 
 impl ProductInfo {
@@ -106,10 +107,26 @@ impl ProductConfig {
             product_key_type,
             part_number,
             eula_type,
+            group_id,
         })
     }
 
     pub fn is_valid(&self, group_id: u32, serial_number: u32) -> bool {
         self.query(group_id, serial_number, 0).is_ok()
+    }
+}
+
+impl std::fmt::Display for ProductInfo {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        writeln!(f, "Product ID      : {}", self.product_id)?;
+        writeln!(f, "Advanced ID     : {}", self.extended_pid)?;
+        writeln!(f, "Activation ID   : {}", self.act_config_id)?;
+        writeln!(f, "Edition Type    : {}", self.edition_id)?;
+        writeln!(f, "Description     : {}", self.product_description)?;
+        writeln!(f, "Edition ID      : {}", self.part_number)?;
+        writeln!(f, "Key Type        : {}", self.product_key_type)?;
+        writeln!(f, "EULA            : {}", self.eula_type)?;
+        write!(  f, "Crypto ID       : {}", self.group_id)?;
+        Ok(())
     }
 }
